@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Users - UniMeet{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-users text-purple-600 mr-3"></i>
+            User Management
+        </h1>
+        <p class="text-gray-600">Manage all UniMeet users in one place</p>
+    </div>
+
+    <!-- Stats and Create Button -->
+    <div class="flex flex-col lg:flex-row justify-between items-center mb-8 space-y-4 lg:space-y-0">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <p class="text-2xl font-bold text-purple-600">{{ users|length }}</p>
+                <p class="text-gray-600">Total Users</p>
+            </div>
+        </div>
+        
+        <a href="{{ path('app_user_new') }}" 
+           class="flex items-center space-x-2 btn-primary text-white px-6 py-3 rounded-lg">
+            <i class="fas fa-user-plus"></i>
+            <span>Add New User</span>
+        </a>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="gradient-bg text-white">
+                    <tr>
+                        <th class="py-4 px-6 text-left">User</th>
+                        <th class="py-4 px-6 text-left">Email</th>
+                        <th class="py-4 px-6 text-left">Roles</th>
+                        <th class="py-4 px-6 text-left">Joined</th>
+                        <th class="py-4 px-6 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {% for user in users %}
+                    <tr class="hover:bg-gray-50 transition duration-300">
+                        <td class="py-4 px-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ user.name }}</p>
+                                    <p class="text-sm text-gray-500">ID: {{ user.id }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <p class="text-gray-800">{{ user.email }}</p>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex flex-wrap gap-1">
+                                {% for role in user.roles %}
+                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
+                                        {{ role }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <p class="text-gray-600">{{ user.createdAt ? user.createdAt|date('M j, Y') : 'N/A' }}</p>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="flex justify-center space-x-2">
+                                <a href="{{ path('app_user_show', {'id': user.id}) }}" 
+                                   class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300"
+                                   title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                                   class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition duration-300"
+                                   title="Edit User">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="py-8 px-6 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-4">
+                                <i class="fas fa-users text-gray-400 text-6xl"></i>
+                                <p class="text-gray-500 text-lg">No users found</p>
+                                <a href="{{ path('app_user_new') }}" 
+                                   class="btn-primary text-white px-6 py-2 rounded-lg">
+                                    Create First User
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

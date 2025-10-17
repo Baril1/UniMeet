@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Details - UniMeet{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-user-circle text-purple-600 mr-3"></i>
+            User Profile
+        </h1>
+        <p class="text-gray-600">Detailed information about the user</p>
+    </div>
+
+    <!-- User Card -->
+    <div class="bg-white rounded-2xl shadow-xl card-hover overflow-hidden">
+        <div class="gradient-bg py-6 px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-purple-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">{{ user.name }}</h2>
+                        <p class="text-purple-200">{{ user.email }}</p>
+                    </div>
+                </div>
+                <span class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold">
+                    ID: {{ user.id }}
+                </span>
+            </div>
+        </div>
+
+        <!-- User Details -->
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-envelope text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Email</p>
+                            <p class="font-semibold text-gray-800">{{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-tag text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Roles</p>
+                            <p class="font-semibold text-gray-800">
+                                {% for role in user.roles %}
+                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm mr-1">
+                                        {{ role }}
+                                    </span>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calendar text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Member Since</p>
+                            <p class="font-semibold text-gray-800">
+                                {{ user.createdAt ? user.createdAt|date('F j, Y') : 'Not specified' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Account Status</p>
+                            <p class="font-semibold text-gray-800">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                                    Active
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mt-8">
+        <a href="{{ path('app_user_index') }}" 
+           class="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition duration-300">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to List</span>
+        </a>
+        
+        <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+           class="flex items-center space-x-2 btn-primary text-white px-6 py-3 rounded-lg">
+            <i class="fas fa-edit"></i>
+            <span>Edit User</span>
+        </a>
+
+        <div class="inline-block">
+            {{ include('user/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
+{% endblock %}
