@@ -1,0 +1,382 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - UniMeet{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="gradient-bg text-white">
+    <div class="container mx-auto px-4 py-16">
+        <div class="flex flex-col lg:flex-row items-center justify-between">
+            <div class="lg:w-1/2 mb-12 lg:mb-0">
+                <h1 class="text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                    Welcome back, 
+                    <span class="text-yellow-300">{{ app.user.name }}! 👋</span>
+                </h1>
+                <p class="text-xl mb-8 text-purple-100">
+                    Ready to start your next video conference? Everything you need is right here.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
+                    <button class="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold text-lg text-center transition duration-300 transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i>
+                        New Meeting
+                    </button>
+                    <button class="border-2 border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg text-center transition duration-300">
+                        <i class="fas fa-calendar mr-2"></i>
+                        Schedule
+                    </button>
+                    <button class="border-2 border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg text-center transition duration-300">
+                        <i class="fas fa-video mr-2"></i>
+                        Join Meeting
+                    </button>
+                </div>
+            </div>
+            <div class="lg:w-1/2">
+                <div class="relative">
+                    <div class="bg-white rounded-2xl p-6 shadow-2xl">
+                        <div class="bg-gray-800 rounded-lg p-1 mb-4">
+                            <div class="flex space-x-2 mb-2">
+                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            </div>
+                            <div class="bg-gray-900 rounded p-4 h-64 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-video text-4xl text-purple-500 mb-4"></i>
+                                    <p class="text-white font-semibold">Your Meeting Room</p>
+                                    <p class="text-gray-400 text-sm">Start a meeting to begin</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Floating elements -->
+                    <div class="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
+                        <i class="fas fa-bolt mr-1"></i>
+                        Ready
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Stats Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Your Overview</h2>
+            <p class="text-xl text-gray-600">Quick glance at your meeting activity</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Stat 1 -->
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl p-6 card-hover text-center">
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-video text-2xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">12</h3>
+                <p class="text-purple-100">Total Meetings</p>
+            </div>
+
+            <!-- Stat 2 -->
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-6 card-hover text-center">
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clock text-2xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">24.5</h3>
+                <p class="text-blue-100">Meeting Hours</p>
+            </div>
+
+            <!-- Stat 3 -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-6 card-hover text-center">
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-calendar text-2xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">3</h3>
+                <p class="text-green-100">Upcoming</p>
+            </div>
+
+            <!-- Stat 4 -->
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl p-6 card-hover text-center">
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-2xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">47</h3>
+                <p class="text-orange-100">Participants</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions Section -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+            <p class="text-xl text-gray-600">Everything you need, right at your fingertips</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Action 1 -->
+            <div class="bg-white rounded-2xl p-8 card-hover text-center border-2 border-purple-100">
+                <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-plus text-purple-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Instant Meeting</h3>
+                <p class="text-gray-600 mb-6">
+                    Start a new meeting immediately and invite participants
+                </p>
+                <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition duration-300">
+                    Start Now
+                </button>
+            </div>
+
+            <!-- Action 2 -->
+            <div class="bg-white rounded-2xl p-8 card-hover text-center border-2 border-blue-100">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-calendar-plus text-blue-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Schedule</h3>
+                <p class="text-gray-600 mb-6">
+                    Plan ahead and schedule meetings for later
+                </p>
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition duration-300">
+                    Schedule
+                </button>
+            </div>
+
+            <!-- Action 3 -->
+            <div class="bg-white rounded-2xl p-8 card-hover text-center border-2 border-green-100">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-user-friends text-green-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">My Team</h3>
+                <p class="text-gray-600 mb-6">
+                    Manage team members and collaboration settings
+                </p>
+                <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition duration-300">
+                    Manage Team
+                </button>
+            </div>
+
+            <!-- Action 4 -->
+            <div class="bg-white rounded-2xl p-8 card-hover text-center border-2 border-orange-100">
+                <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-cog text-orange-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Settings</h3>
+                <p class="text-gray-600 mb-6">
+                    Customize your audio, video, and meeting preferences
+                </p>
+                <button class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-semibold transition duration-300">
+                    Configure
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Meetings Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Upcoming Meetings</h2>
+            <p class="text-xl text-gray-600">Your scheduled meetings and events</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Today's Meetings -->
+            <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-sun text-yellow-500 mr-3"></i>
+                    Today's Schedule
+                </h3>
+                
+                <div class="space-y-4">
+                    <!-- Meeting 1 -->
+                    <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-purple-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Team Standup</h4>
+                                <p class="text-gray-600 text-sm">Daily team synchronization</p>
+                            </div>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
+                                10:00 AM
+                            </span>
+                        </div>
+                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                            <i class="fas fa-users mr-2"></i>
+                            <span>8 participants</span>
+                        </div>
+                    </div>
+
+                    <!-- Meeting 2 -->
+                    <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Client Review</h4>
+                                <p class="text-gray-600 text-sm">Quarterly project review</p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
+                                2:30 PM
+                            </span>
+                        </div>
+                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                            <i class="fas fa-users mr-2"></i>
+                            <span>12 participants</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- This Week -->
+            <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-calendar-week text-green-500 mr-3"></i>
+                    This Week
+                </h3>
+                
+                <div class="space-y-4">
+                    <!-- Meeting 1 -->
+                    <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-green-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Project Planning</h4>
+                                <p class="text-gray-600 text-sm">Q2 roadmap discussion</p>
+                            </div>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
+                                Wed, 11 AM
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Meeting 2 -->
+                    <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-orange-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Training Session</h4>
+                                <p class="text-gray-600 text-sm">New platform features</p>
+                            </div>
+                            <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium">
+                                Fri, 3:00 PM
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Meeting 3 -->
+                    <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-purple-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Team Building</h4>
+                                <p class="text-gray-600 text-sm">Virtual social event</p>
+                            </div>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-medium">
+                                Sat, 1:00 PM
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Activity Section -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Recent Activity</h2>
+            <p class="text-xl text-gray-600">Your latest meetings and interactions</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="gradient-bg text-white">
+                        <tr>
+                            <th class="py-4 px-6 text-left">Meeting</th>
+                            <th class="py-4 px-6 text-left">Date & Time</th>
+                            <th class="py-4 px-6 text-left">Duration</th>
+                            <th class="py-4 px-6 text-left">Participants</th>
+                            <th class="py-4 px-6 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50 transition duration-300">
+                            <td class="py-4 px-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-video text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Weekly Sync</p>
+                                        <p class="text-sm text-gray-500">Team meeting</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <p class="text-gray-800">Yesterday, 9:00 AM</p>
+                            </td>
+                            <td class="py-4 px-6">
+                                <p class="text-gray-600">45 min</p>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex -space-x-2">
+                                    <div class="w-8 h-8 bg-blue-500 rounded-full border-2 border-white"></div>
+                                    <div class="w-8 h-8 bg-green-500 rounded-full border-2 border-white"></div>
+                                    <div class="w-8 h-8 bg-purple-500 rounded-full border-2 border-white"></div>
+                                    <div class="w-8 h-8 bg-yellow-500 rounded-full border-2 border-white flex items-center justify-center text-xs text-white">
+                                        +5
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex justify-center space-x-2">
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300" title="View Recording">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition duration-300" title="Reuse Meeting">
+                                        <i class="fas fa-recycle"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-gray-50 transition duration-300">
+                            <td class="py-4 px-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-users text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Client Demo</p>
+                                        <p class="text-sm text-gray-500">Product presentation</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <p class="text-gray-800">2 days ago, 2:00 PM</p>
+                            </td>
+                            <td class="py-4 px-6">
+                                <p class="text-gray-600">1h 15min</p>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex -space-x-2">
+                                    <div class="w-8 h-8 bg-red-500 rounded-full border-2 border-white"></div>
+                                    <div class="w-8 h-8 bg-indigo-500 rounded-full border-2 border-white"></div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex justify-center space-x-2">
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition duration-300" title="View Recording">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

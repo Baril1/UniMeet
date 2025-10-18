@@ -1,0 +1,8 @@
+knpu_oauth2_client:
+    clients:
+        google:
+            type: google
+            client_id: '53683730985-qmjgp52eaue6tirfo7n2c6vsi3cjln4t.apps.googleusercontent.com'
+            client_secret: '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'
+            redirect_route: connect_google_check
+            redirect_params: {}
