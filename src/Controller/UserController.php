@@ -32,7 +32,7 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hash the password securely
+            // Hash the password secu ? $response :rely
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
@@ -61,6 +61,7 @@ final class UserController extends AbstractController
     public function dashboard(): Response
     {
     // you can pass data to the template if needed
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); 
         return $this->render('user/dashboard.html.twig');
     }
 

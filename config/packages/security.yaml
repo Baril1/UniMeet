@@ -16,12 +16,12 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-
+            # Remove form_login if you want to use only Google OAuth, or keep both
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: /dashboard
+                default_target_path: /user/dashboard
 
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
@@ -31,4 +31,5 @@ security:
                 target: /login
 
     access_control:
-        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        - { path: ^/user/dashboard, roles: ROLE_USER }

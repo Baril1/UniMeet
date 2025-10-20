@@ -1,52 +1,90 @@
 <?php
-
 namespace App\Security;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 
-class GoogleAuthenticator extends AbstractAuthenticator
+class GoogleAuthenticator extends OAuth2Authenticator
 {
     private ClientRegistry $clientRegistry;
+    private EntityManagerInterface $entityManager;
     private RouterInterface $router;
 
-    public function __construct(ClientRegistry $clientRegistry, RouterInterface $router)
-    {
+    public function __construct(
+        ClientRegistry $clientRegistry,
+        EntityManagerInterface $entityManager,
+        RouterInterface $router
+    ) {
         $this->clientRegistry = $clientRegistry;
+        $this->entityManager = $entityManager;
         $this->router = $router;
     }
 
     public function supports(Request $request): ?bool
     {
-        return $request->getPathInfo() === '/connect/google/check';
+        return $request->attributes->get('_route') === 'connect_google_check';
     }
 
     public function authenticate(Request $request): Passport
     {
         $client = $this->clientRegistry->getClient('google');
-        $accessToken = $client->getAccessToken();
-        $googleUser = $client->fetchUserFromToken($accessToken);
+        $accessToken = $this->fetchAccessToken($client);
 
         return new SelfValidatingPassport(
-            new UserBadge($googleUser->getEmail())
+            new UserBadge($accessToken->getToken(), function() use ($accessToken, $client) {
+                /** @var \League\OAuth2\Client\Provider\GoogleUser $googleUser */
+                $googleUser = $client->fetchUserFromToken($accessToken);
+                
+                $email = $googleUser->getEmail();
+                
+                // Check if user already exists
+                $existingUser = $this->entityManager->getRepository(User::class)
+                    ->findOneBy(['email' => $email]);
+                
+                if ($existingUser) {
+                    return $existingUser;
+                }
+                
+                // Create new user if doesn't exist
+                $user = new User();
+                $user->setEmail($email);
+                $user->setName($googleUser->getName() ?? $email);
+                $user->setRoles(['ROLE_USER']);
+                $user->setPassword(bin2hex(random_bytes(10))); // Random password for OAuth users
+                $user->setCreatedAt(new \DateTimeImmutable());
+                
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                
+                return $user;
+            })
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?\Symfony\Component\HttpFoundation\Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new RedirectResponse('/dashboard');
+        // Redirect to dashboard after successful login
+        return new RedirectResponse($this->router->generate('app_dashboard'));
     }
 
-    public function onAuthenticationFailure(Request $request, \Symfony\Component\Security\Core\Exception\AuthenticationException $exception): ?\Symfony\Component\HttpFoundation\Response
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $request->getSession()->getFlashBag()->add('error', 'Login failed');
-        return new RedirectResponse('/login');
+        $message = strtr($exception->getMessageKey(), $exception->getMessageData());
+
+        // Add flash message or handle failure
+        return new RedirectResponse(
+            $this->router->generate('app_login', ['error' => $message])
+        );
     }
 }
