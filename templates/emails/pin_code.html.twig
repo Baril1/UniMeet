@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .pin-code { font-size: 48px; font-weight: bold; text-align: center; color: #667eea; margin: 30px 0; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>UniMeet</h1>
+            <p>Password Reset PIN Code</p>
+        </div>
+        
+        <h2>Hello {{ user.name }},</h2>
+        
+        <p>You requested to reset your password for your UniMeet account. Use the following PIN code to verify your identity:</p>
+        
+        <div class="pin-code">{{ pinCode }}</div>
+        
+        <p>This PIN code will expire in 15 minutes for security reasons.</p>
+        
+        <p>If you didn't request this password reset, please ignore this email. Your account remains secure.</p>
+        
+        <div class="footer">
+            <p>&copy; 2024 UniMeet. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
