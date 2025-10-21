@@ -19,52 +19,48 @@ final class UserController extends AbstractController
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        return $this->render('user/loggedOff.html.twig', [
+        return $this->render('user/indeex.html.twig', [
             'users' => $userRepository->findAll(),
         ]);
     }
 
+    // New user creation
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hash the password secu ? $response :rely
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user,
-                $user->getPassword()
-            );
+            // Hash the password
+            $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hashedPassword);
-    
-            // Set creation date if needed
+
             if (!$user->getCreatedAt()) {
                 $user->setCreatedAt(new \DateTimeImmutable());
             }
-    
-            // Persist user in the database
+
             $entityManager->persist($user);
             $entityManager->flush();
-    
-            // Redirect to a page after successful registration
+
             return $this->redirectToRoute('app_login');
         }
-    
+
         return $this->render('user/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-    
+
+    // Dashboard route
     #[Route('/dashboard', name: 'app_dashboard')]
     public function dashboard(): Response
     {
-    // you can pass data to the template if needed
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY'); 
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         return $this->render('user/dashboard.html.twig');
     }
 
+    // Show individual user details
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
@@ -73,6 +69,7 @@ final class UserController extends AbstractController
         ]);
     }
 
+    // Edit user
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
@@ -91,10 +88,12 @@ final class UserController extends AbstractController
         ]);
     }
 
+    // Delete user
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+        // Corrected CSRF token validation
+        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }

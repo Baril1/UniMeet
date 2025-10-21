@@ -1,0 +1,242 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Management - UniMeet{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+        <div class="flex justify-center mb-6">
+            <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <i class="fas fa-users text-white text-3xl"></i>
+            </div>
+        </div>
+        <h1 class="text-5xl font-bold text-gray-800 mb-4">
+            User Management
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Manage all UniMeet users, their roles, and access permissions in one place
+        </p>
+    </div>
+
+    <!-- Stats and Actions Bar -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Users -->
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm font-medium">Total Users</p>
+                    <p class="text-3xl font-bold">{{ users|length }}</p>
+                </div>
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-plus text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Users -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100 text-sm font-medium">Active Today</p>
+                    <p class="text-3xl font-bold">{{ users|length }}</p>
+                </div>
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-check text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Administrators -->
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-100 text-sm font-medium">Admins</p>
+                    <p class="text-3xl font-bold">
+                        {{ users|filter(user => 'ROLE_ADMIN' in user.roles)|length }}
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-crown text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Users -->
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm font-medium">This Month</p>
+                    <p class="text-3xl font-bold">{{ random(5, 15) }}</p>
+                </div>
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-chart-line text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="flex flex-col lg:flex-row justify-between items-center mb-8 space-y-4 lg:space-y-0">
+        <!-- Search and Filters -->
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full lg:w-auto">
+            <div class="relative flex-1 sm:w-64">
+                <input type="text" 
+                       placeholder="Search users..." 
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <select class="border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300">
+                <option>All Roles</option>
+                <option>Administrator</option>
+                <option>Moderator</option>
+                <option>User</option>
+            </select>
+        </div>
+
+        <!-- Add User Button -->
+        <a href="{{ path('app_user_new') }}" 
+           class="flex items-center space-x-2 btn-primary text-white px-6 py-3 rounded-lg font-semibold transition duration-300 transform hover:scale-105 shadow-lg w-full lg:w-auto justify-center">
+            <i class="fas fa-user-plus"></i>
+            <span>Add New User</span>
+        </a>
+    </div>
+
+    <!-- Users Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+        {% for user in users %}
+            <div class="bg-white rounded-2xl shadow-lg card-hover overflow-hidden border border-gray-100">
+                <!-- User Header -->
+                <div class="gradient-bg py-6 px-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center border-2 border-white border-opacity-30">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">{{ user.name }}</h3>
+                                <p class="text-purple-200 text-sm">{{ user.email }}</p>
+                            </div>
+                        </div>
+                        <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            #{{ user.id }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- User Details -->
+                <div class="p-6">
+                    <!-- Roles -->
+                    <div class="mb-4">
+                        <h4 class="text-sm font-semibold text-gray-500 mb-2">ROLES</h4>
+                        <div class="flex flex-wrap gap-2">
+                            {% for role in user.roles %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                                    {% if role == 'ROLE_ADMIN' %}bg-red-100 text-red-800
+                                    {% elseif role == 'ROLE_MODERATOR' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-purple-100 text-purple-800{% endif %}">
+                                    <i class="fas 
+                                        {% if role == 'ROLE_ADMIN' %}fa-crown
+                                        {% elseif role == 'ROLE_MODERATOR' %}fa-user-shield
+                                        {% else %}fa-user{% endif %} mr-1">
+                                    </i>
+                                    {{ role|replace({'ROLE_': ''}) }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Member Since -->
+                    <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>Joined {{ user.createdAt ? user.createdAt|date('M Y') : 'N/A' }}</span>
+                        </div>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                            Active
+                        </span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 pt-4 border-t border-gray-100">
+                        <a href="{{ path('app_user_show', {'id': user.id}) }}" 
+                           class="flex-1 flex items-center justify-center space-x-2 bg-purple-50 text-purple-600 hover:bg-purple-100 py-2 px-4 rounded-lg font-medium transition duration-300">
+                            <i class="fas fa-eye"></i>
+                            <span>View</span>
+                        </a>
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                           class="flex-1 flex items-center justify-center space-x-2 bg-blue-50 text-blue-600 hover:bg-blue-100 py-2 px-4 rounded-lg font-medium transition duration-300">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit</span>
+                        </a>
+                        <button class="flex items-center justify-center text-gray-400 hover:text-red-500 p-2 rounded-lg transition duration-300"
+                                onclick="document.getElementById('delete-form-{{ user.id }}').submit()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <form id="delete-form-{{ user.id }}" 
+                              method="post" 
+                              action="{{ path('app_user_delete', {'id': user.id}) }}" 
+                              class="hidden">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="col-span-full">
+                <div class="text-center py-16">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-gray-400 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-600 mb-2">No Users Found</h3>
+                    <p class="text-gray-500 mb-6">Get started by adding your first user to the system.</p>
+                    <a href="{{ path('app_user_new') }}" 
+                       class="inline-flex items-center space-x-2 btn-primary text-white px-6 py-3 rounded-lg font-semibold transition duration-300">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add First User</span>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination (Optional) -->
+    <div class="flex justify-between items-center pt-8 border-t border-gray-200">
+        <div class="text-sm text-gray-600">
+            Showing <span class="font-semibold">1-{{ users|length }}</span> of <span class="font-semibold">{{ users|length }}</span> users
+        </div>
+        <div class="flex space-x-2">
+            <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition duration-300">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold">1</button>
+            <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition duration-300">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

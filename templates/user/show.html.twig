@@ -1,92 +1,217 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User Details - UniMeet{% endblock %}
+{% block title %}{{ user.name }} - Profile - UniMeet{% endblock %}
 
 {% block body %}
-<div class="max-w-4xl mx-auto">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">
-            <i class="fas fa-user-circle text-purple-600 mr-3"></i>
-            User Profile
+        <div class="flex justify-center mb-4">
+            <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl">
+                <i class="fas fa-user text-white text-4xl"></i>
+            </div>
+        </div>
+        <h1 class="text-5xl font-bold text-gray-800 mb-3">
+            {{ user.name }}
         </h1>
-        <p class="text-gray-600">Detailed information about the user</p>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Member profile and account information
+        </p>
     </div>
 
-    <!-- User Card -->
-    <div class="bg-white rounded-2xl shadow-xl card-hover overflow-hidden">
-        <div class="gradient-bg py-6 px-8">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-purple-600 text-2xl"></i>
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column - Profile Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-hover">
+                <!-- Profile Header -->
+                <div class="gradient-bg py-8 px-6 text-center">
+                    <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white border-opacity-30">
+                        <i class="fas fa-user text-white text-2xl"></i>
                     </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-white">{{ user.name }}</h2>
-                        <p class="text-purple-200">{{ user.email }}</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">{{ user.name }}</h2>
+                    <p class="text-purple-200">{{ user.email }}</p>
+                    <div class="mt-4">
+                        <span class="inline-block bg-white bg-opacity-20 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                            ID: {{ user.id }}
+                        </span>
                     </div>
                 </div>
-                <span class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold">
-                    ID: {{ user.id }}
-                </span>
+
+                <!-- Quick Stats -->
+                <div class="p-6 bg-gray-50">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-chart-bar text-purple-500 mr-2"></i>
+                        Quick Stats
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Member Since</span>
+                            <span class="font-semibold text-gray-800">{{ user.createdAt ? user.createdAt|date('M Y') : 'N/A' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Status</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                                Active
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Role</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                                {{ user.roles[0]|replace({'ROLE_': ''})|default('User') }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Cards -->
+            <div class="mt-6 space-y-4">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                        Quick Actions
+                    </h3>
+                    <div class="space-y-3">
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                           class="flex items-center space-x-3 text-purple-600 hover:text-purple-700 p-3 rounded-lg hover:bg-purple-50 transition duration-300">
+                            <i class="fas fa-edit w-5"></i>
+                            <span>Edit Profile</span>
+                        </a>
+                        <button class="flex items-center space-x-3 text-blue-600 hover:text-blue-700 p-3 rounded-lg hover:bg-blue-50 transition duration-300 w-full text-left">
+                            <i class="fas fa-envelope w-5"></i>
+                            <span>Send Message</span>
+                        </button>
+                        <button class="flex items-center space-x-3 text-green-600 hover:text-green-700 p-3 rounded-lg hover:bg-green-50 transition duration-300 w-full text-left">
+                            <i class="fas fa-video w-5"></i>
+                            <span>Start Meeting</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- User Details -->
-        <div class="p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-6">
-                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-envelope text-purple-600"></i>
+        <!-- Right Column - Detailed Information -->
+        <div class="lg:col-span-2">
+            <!-- Personal Information Card -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-hover mb-8">
+                <div class="border-b border-gray-200 px-6 py-4">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-user-circle text-purple-500 mr-3"></i>
+                        Personal Information
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Email -->
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-envelope text-purple-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Email Address</p>
+                                <p class="text-lg font-semibold text-gray-800">{{ user.email }}</p>
+                                <p class="text-sm text-gray-400 mt-1">Primary contact email</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Email</p>
-                            <p class="font-semibold text-gray-800">{{ user.email }}</p>
-                        </div>
-                    </div>
 
-                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-user-tag text-purple-600"></i>
+                        <!-- Full Name -->
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Full Name</p>
+                                <p class="text-lg font-semibold text-gray-800">{{ user.name }}</p>
+                                <p class="text-sm text-gray-400 mt-1">Display name</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Roles</p>
-                            <p class="font-semibold text-gray-800">
-                                {% for role in user.roles %}
-                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm mr-1">
-                                        {{ role }}
-                                    </span>
-                                {% endfor %}
-                            </p>
+
+                        <!-- Member Since -->
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-calendar text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">Member Since</p>
+                                <p class="text-lg font-semibold text-gray-800">
+                                    {{ user.createdAt ? user.createdAt|date('F j, Y') : 'Not specified' }}
+                                </p>
+                                <p class="text-sm text-gray-400 mt-1">Account creation date</p>
+                            </div>
+                        </div>
+
+                        <!-- User ID -->
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-id-card text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium">User ID</p>
+                                <p class="text-lg font-semibold text-gray-800">#{{ user.id }}</p>
+                                <p class="text-sm text-gray-400 mt-1">Unique identifier</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="space-y-6">
-                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-calendar text-purple-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Member Since</p>
-                            <p class="font-semibold text-gray-800">
-                                {{ user.createdAt ? user.createdAt|date('F j, Y') : 'Not specified' }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-shield-alt text-purple-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Account Status</p>
-                            <p class="font-semibold text-gray-800">
-                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
-                                    Active
+            <!-- Roles & Permissions Card -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-hover">
+                <div class="border-b border-gray-200 px-6 py-4">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-user-shield text-purple-500 mr-3"></i>
+                        Roles & Permissions
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Assigned Roles</h3>
+                        <div class="flex flex-wrap gap-3">
+                            {% for role in user.roles %}
+                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium 
+                                    {% if role == 'ROLE_ADMIN' %}bg-red-100 text-red-800
+                                    {% elseif role == 'ROLE_MODERATOR' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-purple-100 text-purple-800{% endif %}">
+                                    <i class="fas 
+                                        {% if role == 'ROLE_ADMIN' %}fa-crown
+                                        {% elseif role == 'ROLE_MODERATOR' %}fa-user-shield
+                                        {% else %}fa-user{% endif %} mr-2">
+                                    </i>
+                                    {{ role|replace({'ROLE_': ''}) }}
                                 </span>
-                            </p>
+                            {% else %}
+                                <span class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
+                                    <i class="fas fa-user mr-2"></i>
+                                    No roles assigned
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Status</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
+                                    <div>
+                                        <p class="font-semibold text-green-800">Active</p>
+                                        <p class="text-green-600 text-sm">Account is active and accessible</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-shield-alt text-blue-500 text-xl mr-3"></i>
+                                    <div>
+                                        <p class="font-semibold text-blue-800">Verified</p>
+                                        <p class="text-blue-600 text-sm">Email address is verified</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,23 +219,39 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mt-8">
-        <a href="{{ path('app_user_index') }}" 
-           class="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition duration-300">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back to List</span>
-        </a>
+    <!-- Action Buttons Footer -->
+    <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 mt-12 pt-8 border-t border-gray-200">
+        <div class="flex items-center space-x-4">
+            <a href="{{ path('app_user_index') }}" 
+               class="flex items-center space-x-2 text-gray-600 hover:text-gray-800 font-semibold transition duration-300">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Users</span>
+            </a>
+        </div>
         
-        <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
-           class="flex items-center space-x-2 btn-primary text-white px-6 py-3 rounded-lg">
-            <i class="fas fa-edit"></i>
-            <span>Edit User</span>
-        </a>
-
-        <div class="inline-block">
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+               class="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300 transform hover:scale-105 shadow-lg">
+                <i class="fas fa-edit"></i>
+                <span>Edit User</span>
+            </a>
+            
             {{ include('user/_delete_form.html.twig') }}
         </div>
     </div>
 </div>
+
+<!-- Custom Styles -->
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
 {% endblock %}

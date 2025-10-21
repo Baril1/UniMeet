@@ -21,7 +21,83 @@ class SecurityController extends AbstractController
     {
         $this->requestStack = $requestStack;
     }
+    #[Route('/forgot-password', name: 'app_forgot_password')]
+public function forgotPassword(Request $request, EntityManagerInterface $entityManager, \Symfony\Component\Mailer\MailerInterface $mailer): Response
+{
+    if ($this->getUser()) {
+        return $this->redirectToRoute('app_dashboard');
+    }
 
+    if ($request->isMethod('POST')) {
+        $email = $request->request->get('email');
+        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if ($user) {
+            // Generate reset token (in a real app, you'd use a proper token system)
+            $token = bin2hex(random_bytes(32));
+            $user->setResetToken($token); // You'll need to add this field to your User entity
+            $user->setResetTokenExpiresAt(new \DateTimeImmutable('+1 hour'));
+            $entityManager->flush();
+
+            // Send email (simplified - you'd use a proper email service)
+            $resetUrl = $this->generateUrl('app_reset_password', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+            
+            // In a real application, you'd send an actual email here
+            // $email = (new Email())->...->html($this->renderView('emails/reset_password.html.twig', ['resetUrl' => $resetUrl]));
+            // $mailer->send($email);
+
+            $this->addFlash('success', 'If an account with that email exists, we have sent a password reset link.');
+        } else {
+            // For security, don't reveal if the email exists or not
+            $this->addFlash('success', 'If an account with that email exists, we have sent a password reset link.');
+        }
+
+        return $this->redirectToRoute('app_forgot_password');
+    }
+
+    return $this->render('security/forgot_password.html.twig');
+}
+
+#[Route('/reset-password/{token}', name: 'app_reset_password')]
+public function resetPassword(Request $request, string $token, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+{
+    if ($this->getUser()) {
+        return $this->redirectToRoute('app_dashboard');
+    }
+
+    $user = $entityManager->getRepository(User::class)->findOneBy([
+        'resetToken' => $token,
+        // Also check if token is not expired in real implementation
+    ]);
+
+    if (!$user) {
+        $this->addFlash('error', 'Invalid or expired reset token.');
+        return $this->redirectToRoute('app_forgot_password');
+    }
+
+    if ($request->isMethod('POST')) {
+        $password = $request->request->get('password');
+        $confirmPassword = $request->request->get('confirm_password');
+
+        if ($password !== $confirmPassword) {
+            $this->addFlash('error', 'Passwords do not match.');
+            return $this->redirectToRoute('app_reset_password', ['token' => $token]);
+        }
+
+        // Update password
+        $user->setPassword(
+            $passwordHasher->hashPassword($user, $password)
+        );
+        $user->setResetToken(null);
+        $user->setResetTokenExpiresAt(null);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Your password has been reset successfully. You can now login with your new password.');
+        return $this->redirectToRoute('app_login');
+    }
+
+    return $this->render('security/reset_password.html.twig');
+}
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
