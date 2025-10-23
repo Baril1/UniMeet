@@ -16,20 +16,27 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            # Remove form_login if you want to use only Google OAuth, or keep both
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: /user/dashboard
-
+                default_target_path: app_dashboard
+            logout:
+                path: app_logout
+                target: app_login
+                csrf_token_id: logout
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
 
-            logout:
-                path: app_logout
-                target: /login
-
     access_control:
         - { path: ^/connect/google, roles: PUBLIC_ACCESS }
-        - { path: ^/user/dashboard, roles: ROLE_USER }
+        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/user, roles: ROLE_USER }
+        - { path: ^/settings, roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-pin, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS }

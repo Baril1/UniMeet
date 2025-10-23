@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\RegistrationType;
 use App\Security\AppAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -26,6 +27,101 @@ class SecurityController extends AbstractController
         $this->mailer = $mailer;
     }
 
+    #[Route('/', name: 'app_home')]
+    public function home(): Response
+    {
+        // If user is already logged in, redirect to dashboard
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->render('home/index.html.twig');
+    }
+
+    #[Route('/dashboard', name: 'app_dashboard')]
+    public function dashboard(): Response
+    {
+        return $this->render('home/dashboard.html.twig');
+    }
+
+    #[Route('/settings', name: 'app_settings')]
+    public function settings(): Response
+    {
+        return $this->render('settings/index.html.twig');
+    }
+
+    #[Route('/profile', name: 'app_profile')]
+    public function profile(): Response
+    {
+        return $this->render('profile/index.html.twig', [
+            'user' => $this->getUser()
+        ]);
+    }
+
+    #[Route('/register', name: 'app_register')]
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    {
+        // If user is already logged in, redirect to dashboard
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $user = new User();
+        $form = $this->createForm(RegistrationType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Encode the plain password
+            $user->setPassword(
+                $passwordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+
+            // Set created date
+            $user->setCreatedAt(new \DateTimeImmutable());
+
+            // Set default role if not set
+            if (empty($user->getRoles())) {
+                $user->setRoles(['ROLE_USER']);
+            }
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // Redirect to login page after successful registration
+            $this->addFlash('success', 'Registration successful! You can now log in.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('security/register.html.twig', [
+            'registrationForm' => $form->createView(),
+        ]);
+    }
+
+    #[Route(path: '/login', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils): Response
+    {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        return $this->render('security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
+    }
+
+    #[Route(path: '/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+
     #[Route('/forgot-password', name: 'app_forgot_password')]
     public function forgotPassword(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -42,10 +138,9 @@ class SecurityController extends AbstractController
             }
 
             $user = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-            dump("123");
+
             if ($user) {
                 // Generate PIN
-                dump("456");
                 $pinCode = str_pad((string) mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
                 
                 // Store in session
@@ -61,9 +156,7 @@ class SecurityController extends AbstractController
                 // Try to send email only if mailer is available
                 if ($this->mailer) {
                     try {
-                        dump("789");
                         $emailMessage = (new Email())
-            
                             ->from('unimeet7@gmail.com')
                             ->to($user->getEmail())
                             ->subject('UniMeet Password Reset PIN')
@@ -176,28 +269,6 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/reset_password.html.twig');
-    }
-
-    #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
-    {
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_dashboard');
-        }
-
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
-        ]);
-    }
-
-    #[Route(path: '/logout', name: 'app_logout')]
-    public function logout(): void
-    {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     #[Route(path: '/connect/google', name: 'connect_google_start')]

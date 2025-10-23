@@ -4,6 +4,14 @@
 
 {% block body %}
 <div class="max-w-2xl mx-auto">
+    <!-- Debug: Check if form exists -->
+    {% if form is not defined %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <p><strong>Error:</strong> Form variable is not defined in the template!</p>
+            <p>Available variables: {{ _context|keys|join(', ') }}</p>
+        </div>
+    {% endif %}
+
     <!-- Header -->
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-800 mb-4">
@@ -13,6 +21,7 @@
         <p class="text-gray-600">Create a new UniMeet user account</p>
     </div>
 
+    {% if form is defined %}
     <!-- Form Card -->
     <div class="bg-white rounded-2xl shadow-xl card-hover overflow-hidden">
         <div class="gradient-bg py-6 px-8">
@@ -20,9 +29,30 @@
         </div>
         
         <div class="p-8">
-            {{ include('user/_form.html.twig') }}
+            {{ form_start(form) }}
+            <div class="space-y-6">
+                <!-- Render all form fields automatically -->
+                {{ form_rest(form) }}
+
+                <!-- Submit Button -->
+                <div class="pt-6">
+                    <button type="submit" class="w-full flex items-center justify-center space-x-2 btn-primary text-white py-4 px-6 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-105">
+                        <i class="fas fa-save"></i>
+                        <span>Create User</span>
+                    </button>
+                </div>
+            </div>
+            {{ form_end(form) }}
         </div>
     </div>
+    {% else %}
+    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+        <p>No form available. Please check your controller.</p>
+        <a href="{{ path('app_user_index') }}" class="text-blue-600 hover:text-blue-800 underline">
+            Back to user list
+        </a>
+    </div>
+    {% endif %}
 
     <!-- Back Button -->
     <div class="text-center mt-8">
@@ -33,4 +63,26 @@
         </a>
     </div>
 </div>
+
+<!-- Custom Styles -->
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+</style>
 {% endblock %}
