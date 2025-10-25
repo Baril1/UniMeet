@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationType;
 use App\Security\AppAuthenticator;
+use App\Repository\MeetingRepository; // ← ADD THIS LINE
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,9 +40,28 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function dashboard(): Response
+    public function dashboard(MeetingRepository $meetingRepository): Response
     {
-        return $this->render('home/dashboard.html.twig');
+        $user = $this->getUser();
+        
+        // Get user's meetings
+        $meetings = $meetingRepository->findBy(['host' => $user], ['createdAt' => 'DESC']);
+        
+        // Filter meetings
+        $ongoingMeetings = array_filter($meetings, fn($m) => $m->getStatus() === 'ongoing');
+        $upcomingMeetings = array_filter($meetings, fn($m) => $m->getStatus() === 'scheduled');
+        $recentMeetings = array_slice($meetings, 0, 5); // Last 5 meetings
+        
+        // Calculate total participants
+        $totalParticipants = array_reduce($meetings, fn($carry, $m) => $carry + $m->getParticipants()->count(), 0);
+    
+        return $this->render('home/dashboard.html.twig', [
+            'meetings' => $meetings,
+            'ongoing_meetings' => $ongoingMeetings,
+            'upcoming_meetings' => $upcomingMeetings,
+            'recent_meetings' => $recentMeetings,
+            'total_participants' => $totalParticipants,
+        ]);
     }
 
     #[Route('/settings', name: 'app_settings')]
