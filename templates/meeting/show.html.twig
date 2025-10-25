@@ -1,0 +1,182 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ meeting.title }} - UniMeet{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">
+                    <i class="fas fa-video text-purple-600 mr-3"></i>
+                    {{ meeting.title }}
+                </h1>
+                <p class="text-gray-600 mt-2">{{ meeting.description ?: 'No description provided' }}</p>
+            </div>
+            <div class="flex space-x-3">
+                {% if meeting.status == 'ongoing' or meeting.type == 'instant' %}
+                    <a href="{{ path('app_meeting_room', {'id': meeting.id}) }}" 
+                       class="btn-primary">
+                        <i class="fas fa-play mr-2"></i>
+                        Join Meeting
+                    </a>
+                {% elseif meeting.status == 'scheduled' and meeting.host == app.user %}
+                    <form method="post" action="{{ path('app_meeting_start', {'id': meeting.id}) }}">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-play mr-2"></i>
+                            Start Meeting
+                        </button>
+                    </form>
+                {% endif %}
+                <a href="{{ path('app_meeting_index') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Meetings
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Meeting Information -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Meeting Information</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">Meeting Type</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        {% if meeting.type == 'instant' %}bg-red-100 text-red-800
+                                        {% else %}bg-blue-100 text-blue-800{% endif %}">
+                                        {{ meeting.type|title }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">Status</label>
+                                <p class="mt-1 text-sm text-gray-900">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        {% if meeting.status == 'ongoing' %}bg-green-100 text-green-800
+                                        {% elseif meeting.status == 'scheduled' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ meeting.status|title }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">Duration</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ meeting.duration }} minutes</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            {% if meeting.scheduledAt %}
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">Scheduled Time</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ meeting.scheduledAt|date('F j, Y g:i A') }}</p>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">Created</label>
+                                <p class="mt-1 text-sm text-gray-900">{{ meeting.createdAt|date('F j, Y') }}</p>
+                            </div>
+                            {% if meeting.password %}
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">Password Protected</label>
+                                <p class="mt-1 text-sm text-gray-900">Yes</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participants Section -->
+            <div class="bg-white shadow rounded-lg mt-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Participants ({{ meeting.participants|length }})</h2>
+                </div>
+                <div class="p-6">
+                    {% if meeting.participants|length > 0 %}
+                        <div class="space-y-3">
+                            {% for participant in meeting.participants %}
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-purple-600 text-sm"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">{{ participant.name }}</p>
+                                            <p class="text-sm text-gray-500">{{ participant.email }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-500">Joined</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-500 text-center py-4">No participants have joined yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Host Information & Actions -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Host</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-crown text-purple-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-900">{{ meeting.host.name }}</p>
+                            <p class="text-sm text-gray-500">{{ meeting.host.email }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meeting Actions -->
+            <div class="bg-white shadow rounded-lg mt-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+                </div>
+                <div class="p-6 space-y-3">
+                    {% if meeting.host == app.user %}
+                        <button class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            <i class="fas fa-share-alt mr-2"></i>
+                            Share Meeting
+                        </button>
+                        <button class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit Meeting
+                        </button>
+                    {% endif %}
+                    <button class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-calendar-plus mr-2"></i>
+                        Add to Calendar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-primary {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500;
+}
+
+.btn-secondary {
+    @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500;
+}
+</style>
+{% endblock %}

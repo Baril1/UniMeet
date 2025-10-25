@@ -1,0 +1,252 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Meeting - UniMeet{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-video text-purple-600 mr-3"></i>
+            Create New Meeting
+        </h1>
+        <p class="text-gray-600 text-lg">Schedule a meeting or start an instant one</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl shadow-xl card-hover overflow-hidden">
+        <div class="gradient-bg py-6 px-8">
+            <h2 class="text-2xl font-bold text-white">Meeting Details</h2>
+        </div>
+        
+        <div class="p-8">
+            {{ form_start(form) }}
+            <div class="space-y-8">
+                <!-- Meeting Type Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-4 text-lg">Choose Meeting Type</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="meetingTypeSelector">
+                        <!-- Instant Meeting Option -->
+                        <div class="meeting-type-option relative">
+                            <input type="radio" name="meeting_type_quick" value="instant" id="instant_meeting" class="hidden peer">
+                            <label for="instant_meeting" class="flex flex-col items-center p-8 border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-300 peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-purple-300 hover:shadow-lg">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-bolt text-2xl text-red-600"></i>
+                                </div>
+                                <span class="font-bold text-gray-800 text-xl mb-2">Instant Meeting</span>
+                                <span class="text-gray-600 text-center">Start immediately with a single click</span>
+                                <div class="mt-4 text-sm text-green-600 font-semibold">
+                                    <i class="fas fa-play-circle mr-1"></i>
+                                    Start Now
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Scheduled Meeting Option -->
+                        <div class="meeting-type-option relative">
+                            <input type="radio" name="meeting_type_quick" value="scheduled" id="scheduled_meeting" class="hidden peer" checked>
+                            <label for="scheduled_meeting" class="flex flex-col items-center p-8 border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-300 peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-purple-300 hover:shadow-lg">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-calendar-alt text-2xl text-blue-600"></i>
+                                </div>
+                                <span class="font-bold text-gray-800 text-xl mb-2">Scheduled Meeting</span>
+                                <span class="text-gray-600 text-center">Plan for a specific date and time</span>
+                                <div class="mt-4 text-sm text-blue-600 font-semibold">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Plan Ahead
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="space-y-6 bg-gray-50 p-6 rounded-xl">
+                    <!-- Basic Information -->
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Title Field -->
+                        <div>
+                            {{ form_label(form.title, 'Meeting Title', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.title, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 pl-12', 'placeholder': 'Team Standup, Client Meeting, etc.'}}) }}
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-heading text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.title) }}
+                        </div>
+
+                        <!-- Description Field -->
+                        <div>
+                            {{ form_label(form.description, 'Description (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.description, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 pl-12', 'placeholder': 'Brief description of the meeting agenda...', 'rows': 4}}) }}
+                                <div class="absolute top-3 left-3 pointer-events-none">
+                                    <i class="fas fa-align-left text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.description) }}
+                        </div>
+
+                        <!-- Hidden Type Field (controlled by radio buttons) -->
+                        <div id="typeFormField" class="hidden">
+                            {{ form_widget(form.type) }}
+                        </div>
+
+                        <!-- Scheduled Fields (shown only for scheduled meetings) -->
+                        <div id="scheduledFields">
+                            <div>
+                                {{ form_label(form.scheduledAt, 'Schedule Date & Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                                <div class="relative">
+                                    {{ form_widget(form.scheduledAt, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 pl-12'}}) }}
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-calendar text-gray-400"></i>
+                                    </div>
+                                </div>
+                                {{ form_errors(form.scheduledAt) }}
+                            </div>
+                        </div>
+
+                        <!-- Duration Field -->
+                        <div>
+                            {{ form_label(form.duration, 'Duration (minutes)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.duration, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 pl-12'}}) }}
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-hourglass-half text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.duration) }}
+                        </div>
+
+                        <!-- Password Field -->
+                        <div>
+                            {{ form_label(form.password, 'Meeting Password (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.password, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 pl-12', 'placeholder': 'Add password for extra security'}}) }}
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.password) }}
+                        </div>
+
+                        <!-- Max Participants Field -->
+                        <div>
+                            {{ form_label(form.maxParticipants, 'Max Participants (Optional)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.maxParticipants, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 pl-12'}}) }}
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-users text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.maxParticipants) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button type="submit" id="submitButton" class="flex-1 flex items-center justify-center space-x-2 btn-primary text-white py-4 px-6 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-105">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span id="submitText">Create Scheduled Meeting</span>
+                    </button>
+                    <a href="{{ path('app_meeting_index') }}" class="flex items-center justify-center space-x-2 bg-gray-200 text-gray-700 hover:bg-gray-300 py-4 px-6 rounded-lg text-lg font-semibold transition duration-300">
+                        <i class="fas fa-times"></i>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Meeting Type Selection -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeRadios = document.querySelectorAll('input[name="meeting_type_quick"]');
+    const typeFormField = document.querySelector('#meeting_type');
+    const scheduledFields = document.querySelector('#scheduledFields');
+    const submitButton = document.querySelector('#submitButton');
+    const submitText = document.querySelector('#submitText');
+    
+    function updateForm() {
+        const selectedType = document.querySelector('input[name="meeting_type_quick"]:checked').value;
+        
+        // Update the hidden form field
+        typeFormField.value = selectedType;
+        
+        // Show/hide scheduled fields and update button text
+        if (selectedType === 'instant') {
+            scheduledFields.style.display = 'none';
+            submitText.textContent = 'Start Instant Meeting';
+            submitButton.querySelector('i').className = 'fas fa-bolt';
+            
+            // Set scheduledAt to empty for instant meetings
+            const scheduledAtField = document.querySelector('#meeting_scheduledAt');
+            if (scheduledAtField) {
+                scheduledAtField.value = '';
+            }
+        } else {
+            scheduledFields.style.display = 'block';
+            submitText.textContent = 'Create Scheduled Meeting';
+            submitButton.querySelector('i').className = 'fas fa-calendar-plus';
+        }
+    }
+    
+    // Add event listeners to radio buttons
+    typeRadios.forEach(radio => {
+        radio.addEventListener('change', updateForm);
+    });
+    
+    // Initialize form state
+    updateForm();
+    
+    // Add some animation to type selection
+    const typeOptions = document.querySelectorAll('.meeting-type-option');
+    typeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            typeOptions.forEach(opt => {
+                opt.style.transform = 'scale(1)';
+            });
+            this.style.transform = 'scale(1.02)';
+        });
+    });
+});
+</script>
+
+<!-- Custom Styles -->
+<style>
+.card-hover {
+    transition: all 0.3s ease;
+}
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: all 0.3s ease;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.meeting-type-option {
+    transition: all 0.3s ease;
+}
+.meeting-type-option:hover {
+    transform: translateY(-2px);
+}
+
+/* Custom datetime input styling */
+input[type="datetime-local"] {
+    padding: 12px 16px 12px 48px;
+}
+</style>
+{% endblock %}

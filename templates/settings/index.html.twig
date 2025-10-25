@@ -3,65 +3,305 @@
 {% block title %}Settings - UniMeet{% endblock %}
 
 {% block body %}
-<div class="max-w-4xl mx-auto py-8">
-    <!-- Header -->
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
             <i class="fas fa-cog text-purple-600 mr-3"></i>
             Settings
         </h1>
-        <p class="text-gray-600">Manage your account preferences and settings</p>
+        <p class="text-gray-600 mt-2">Manage your account settings and preferences</p>
     </div>
 
-    <!-- Settings Card -->
-    <div class="bg-white rounded-2xl shadow-xl p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Account Settings -->
-            <div class="space-y-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Account Settings</h2>
-                
-                <div class="space-y-4">
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-semibold text-gray-800 mb-2">Profile Information</h3>
-                        <p class="text-gray-600 text-sm mb-3">Update your account profile information</p>
-                        <button class="text-purple-600 hover:text-purple-700 font-medium">
-                            Edit Profile
-                        </button>
-                    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="lg:col-span-1">
+            <nav class="space-y-1">
+                <a href="#profile" class="settings-nav-item active group">
+                    <i class="fas fa-user text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                    Profile
+                </a>
+                <a href="#security" class="settings-nav-item group">
+                    <i class="fas fa-lock text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                    Security
+                </a>
+                <a href="#notifications" class="settings-nav-item group">
+                    <i class="fas fa-bell text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                    Notifications
+                </a>
+                <a href="#preferences" class="settings-nav-item group">
+                    <i class="fas fa-sliders-h text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                    Preferences
+                </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                <a href="#admin" class="settings-nav-item group">
+                    <i class="fas fa-shield-alt text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                    Admin Settings
+                </a>
+                {% endif %}
+            </nav>
+        </div>
 
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-semibold text-gray-800 mb-2">Change Password</h3>
-                        <p class="text-gray-600 text-sm mb-3">Update your password regularly for security</p>
-                        <button class="text-purple-600 hover:text-purple-700 font-medium">
-                            Change Password
-                        </button>
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+            <!-- Profile Section -->
+            <div id="profile" class="settings-section active">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-user-circle text-purple-600 mr-2"></i>
+                            Profile Information
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <input type="text" id="name" name="name" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                                           value="{{ app.user.name ?? '' }}">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                    <input type="email" id="email" name="email" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                                           value="{{ app.user.email ?? '' }}">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                                <textarea id="bio" name="bio" rows="3" 
+                                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                                          placeholder="Tell us about yourself..."></textarea>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Application Settings -->
-            <div class="space-y-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Preferences</h2>
-                
-                <div class="space-y-4">
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-semibold text-gray-800 mb-2">Notifications</h3>
-                        <p class="text-gray-600 text-sm mb-3">Manage your email and push notifications</p>
-                        <button class="text-purple-600 hover:text-purple-700 font-medium">
-                            Configure
-                        </button>
+            <!-- Security Section -->
+            <div id="security" class="settings-section hidden">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-shield-alt text-purple-600 mr-2"></i>
+                            Security Settings
+                        </h2>
                     </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Change Password -->
+                        <div>
+                            <h3 class="text-md font-medium text-gray-900 mb-4">Change Password</h3>
+                            <form class="space-y-4">
+                                <div>
+                                    <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
+                                    <input type="password" id="current-password" name="current_password" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                </div>
+                                <div>
+                                    <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
+                                    <input type="password" id="new-password" name="new_password" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                </div>
+                                <div>
+                                    <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                                    <input type="password" id="confirm-password" name="confirm_password" 
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                </div>
+                                <div class="flex justify-end">
+                                    <button type="submit" class="btn-primary">
+                                        <i class="fas fa-key mr-2"></i>
+                                        Update Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
 
-                    <div class="p-4 border border-gray-200 rounded-lg">
-                        <h3 class="font-semibold text-gray-800 mb-2">Privacy</h3>
-                        <p class="text-gray-600 text-sm mb-3">Control your privacy settings</p>
-                        <button class="text-purple-600 hover:text-purple-700 font-medium">
-                            Privacy Settings
-                        </button>
+                        <!-- Two-Factor Authentication -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-md font-medium text-gray-900 mb-4">Two-Factor Authentication</h3>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                                </div>
+                                <button type="button" class="btn-secondary">
+                                    <i class="fas fa-mobile-alt mr-2"></i>
+                                    Enable 2FA
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Notifications Section -->
+            <div id="notifications" class="settings-section hidden">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-bell text-purple-600 mr-2"></i>
+                            Notification Preferences
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <form class="space-y-6">
+                            <!-- Email Notifications -->
+                            <div>
+                                <h3 class="text-md font-medium text-gray-900 mb-4">Email Notifications</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="email-course-updates" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                        <label for="email-course-updates" class="ml-2 text-sm text-gray-700">Course updates and announcements</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="email-messages" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" checked>
+                                        <label for="email-messages" class="ml-2 text-sm text-gray-700">Direct messages</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="email-promotional" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                        <label for="email-promotional" class="ml-2 text-sm text-gray-700">Promotional emails</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Push Notifications -->
+                            <div class="border-t border-gray-200 pt-6">
+                                <h3 class="text-md font-medium text-gray-900 mb-4">Push Notifications</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="push-messages" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" checked>
+                                        <label for="push-messages" class="ml-2 text-sm text-gray-700">New messages</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="push-deadlines" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" checked>
+                                        <label for="push-deadlines" class="ml-2 text-sm text-gray-700">Upcoming deadlines</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Save Preferences
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Section (Only for admins) -->
+            {% if is_granted('ROLE_ADMIN') %}
+            <div id="admin" class="settings-section hidden">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            <i class="fas fa-shield-alt text-purple-600 mr-2"></i>
+                            Admin Settings
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <a href="{{ path('app_user_index') }}" class="admin-card group">
+                                <div class="p-4">
+                                    <i class="fas fa-users text-2xl text-purple-600 mb-3"></i>
+                                    <h3 class="text-lg font-semibold text-gray-900">User Management</h3>
+                                    <p class="text-gray-600 mt-1">Manage all users and their permissions</p>
+                                </div>
+                            </a>
+                            <a href="#" class="admin-card group">
+                                <div class="p-4">
+                                    <i class="fas fa-chart-bar text-2xl text-purple-600 mb-3"></i>
+                                    <h3 class="text-lg font-semibold text-gray-900">Analytics</h3>
+                                    <p class="text-gray-600 mt-1">View platform statistics and reports</p>
+                                </div>
+                            </a>
+                            <a href="#" class="admin-card group">
+                                <div class="p-4">
+                                    <i class="fas fa-cog text-2xl text-purple-600 mb-3"></i>
+                                    <h3 class="text-lg font-semibold text-gray-900">System Settings</h3>
+                                    <p class="text-gray-600 mt-1">Configure platform-wide settings</p>
+                                </div>
+                            </a>
+                            <a href="#" class="admin-card group">
+                                <div class="p-4">
+                                    <i class="fas fa-database text-2xl text-purple-600 mb-3"></i>
+                                    <h3 class="text-lg font-semibold text-gray-900">Backup & Restore</h3>
+                                    <p class="text-gray-600 mt-1">Manage database backups</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<!-- JavaScript for Settings Navigation -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation handling
+    const navItems = document.querySelectorAll('.settings-nav-item');
+    const sections = document.querySelectorAll('.settings-section');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all items and sections
+            navItems.forEach(nav => nav.classList.remove('active'));
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Show corresponding section
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+
+<!-- Styles -->
+<style>
+.settings-nav-item {
+    @apply flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition duration-150 ease-in-out;
+}
+
+.settings-nav-item.active {
+    @apply bg-purple-50 text-purple-700 border-r-2 border-purple-700;
+}
+
+.settings-section {
+    @apply transition-opacity duration-300 ease-in-out;
+}
+
+.btn-primary {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out;
+}
+
+.btn-secondary {
+    @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out;
+}
+
+.admin-card {
+    @apply block border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-md transition duration-150 ease-in-out;
+}
+</style>
 {% endblock %}
